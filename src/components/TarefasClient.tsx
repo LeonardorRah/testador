@@ -1,6 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
 
 import ListaDeTarefas from "./ListaDeTarefas";
 import NovaTarefa from "./NovaTarefa";
@@ -13,47 +17,74 @@ type Props = {
   tarefasIniciais: Tarefa[];
 };
 
+const CHAVE_TAREFAS = "tarefas";
+const ouvintes = new Set<() => void>();
+
+function assinarTarefas(ouvinte: () => void) {
+  ouvintes.add(ouvinte);
+  window.addEventListener("storage", ouvinte);
+
+  return () => {
+    ouvintes.delete(ouvinte);
+    window.removeEventListener("storage", ouvinte);
+  };
+}
+
+function obterTarefasSalvas() {
+  return localStorage.getItem(CHAVE_TAREFAS);
+}
+
+function salvarTarefas(tarefas: Tarefa[]) {
+  localStorage.setItem(
+    CHAVE_TAREFAS,
+    JSON.stringify(tarefas)
+  );
+  ouvintes.forEach((ouvinte) => ouvinte());
+}
+
+function interpretarTarefasSalvas(
+  tarefasSalvas: string | null
+): Tarefa[] | null {
+  if (tarefasSalvas === null) {
+    return null;
+  }
+
+  try {
+    const dados: unknown = JSON.parse(tarefasSalvas);
+
+    return Array.isArray(dados) && dados.length > 0
+      ? dados as Tarefa[]
+      : null;
+  } catch (error) {
+    console.error("Não foi possível carregar as tarefas salvas.", error);
+    return null;
+  }
+}
+
 export default function TarefasClient({
   tarefasIniciais,
 }: Props) {
-  const [tarefas, setTarefas] =
-    useState<Tarefa[]>(tarefasIniciais);
+  const tarefasSalvas = useSyncExternalStore(
+    assinarTarefas,
+    obterTarefasSalvas,
+    () => null
+  );
+  const tarefasInterpretadas =
+    interpretarTarefasSalvas(tarefasSalvas);
+  const tarefas =
+    tarefasInterpretadas ?? tarefasIniciais;
 
   const [filtro, setFiltro] =
     useState("todas");
 
   useEffect(() => {
-    const tarefasSalvas =
-      localStorage.getItem("tarefas");
-
-    if (!tarefasSalvas) {
-      setTarefas(tarefasIniciais);
-      return;
+    if (
+      tarefasInterpretadas === null &&
+      obterTarefasSalvas() === tarefasSalvas
+    ) {
+      salvarTarefas(tarefasIniciais);
     }
-
-    try {
-      const dados =
-        JSON.parse(tarefasSalvas);
-
-      if (
-        Array.isArray(dados) &&
-        dados.length > 0
-      ) {
-        setTarefas(dados);
-      } else {
-        setTarefas(tarefasIniciais);
-      }
-    } catch {
-      setTarefas(tarefasIniciais);
-    }
-  }, [tarefasIniciais]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "tarefas",
-      JSON.stringify(tarefas)
-    );
-  }, [tarefas]);
+  }, [tarefasIniciais, tarefasInterpretadas, tarefasSalvas]);
 
   function adicionarTarefa(
     titulo: string
@@ -64,15 +95,12 @@ export default function TarefasClient({
       concluida: false,
     };
 
-    setTarefas((prev) => [
-      ...prev,
-      novaTarefa,
-    ]);
+    salvarTarefas([...tarefas, novaTarefa]);
   }
 
   function removerTarefa(id: number) {
-    setTarefas((prev) =>
-      prev.filter(
+    salvarTarefas(
+      tarefas.filter(
         (tarefa) => tarefa.id !== id
       )
     );
@@ -81,8 +109,8 @@ export default function TarefasClient({
   function alteraColclusao(
     id: number
   ) {
-    setTarefas((prev) =>
-      prev.map((tarefa) =>
+    salvarTarefas(
+      tarefas.map((tarefa) =>
         tarefa.id === id
           ? {
               ...tarefa,

@@ -28,7 +28,7 @@ testador/
 │   ├── tests/             # Testes unitários e de integração
 │   └── types/             # Definições de tipos do TypeScript
 ├── public/                # Arquivos estáticos
-├── jest.config.js         # Configuração do Jest
+├── jest.config.ts         # Configuração do Jest
 └── package.json           # Dependências e scripts do projeto
 
 📦 Instalação

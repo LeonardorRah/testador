@@ -25,7 +25,7 @@ describe("Home Page", () => {
 
     expect(
       screen.getByText(
-        "Aprender testes unitários"
+        "Aprender React"
       )
     ).toBeInTheDocument();
   });
