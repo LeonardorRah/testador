@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  useEffect,
   useState,
   useSyncExternalStore,
 } from "react";
@@ -52,7 +51,7 @@ function interpretarTarefasSalvas(
   try {
     const dados: unknown = JSON.parse(tarefasSalvas);
 
-    return Array.isArray(dados) && dados.length > 0
+    return Array.isArray(dados)
       ? dados as Tarefa[]
       : null;
   } catch (error) {
@@ -76,15 +75,6 @@ export default function TarefasClient({
 
   const [filtro, setFiltro] =
     useState("todas");
-
-  useEffect(() => {
-    if (
-      tarefasInterpretadas === null &&
-      obterTarefasSalvas() === tarefasSalvas
-    ) {
-      salvarTarefas(tarefasIniciais);
-    }
-  }, [tarefasIniciais, tarefasInterpretadas, tarefasSalvas]);
 
   function adicionarTarefa(
     titulo: string

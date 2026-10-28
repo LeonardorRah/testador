@@ -1,62 +1,59 @@
-# 📝 testador
+# Testador
 
-Uma aplicação de **lista de tarefas** simples e intuitiva, desenvolvida com **Next.js** e **TypeScript**. O **testador** permite que você crie, conclua e exclua tarefas, mantendo suas atividades diárias organizadas de forma prática e eficiente.
+Uma lista de tarefas feita com Next.js, React e TypeScript. A aplicação permite adicionar tarefas, marcá-las como concluídas, removê-las e filtrar a lista por status. As alterações são mantidas no armazenamento local do navegador.
 
-## ✨ Funcionalidades
+## Requisitos
 
-- Adicionar novas tarefas
-- Marcar tarefas como concluídas
-- Excluir tarefas existentes
-- Interface componentizada e responsiva
+- Node.js 20.9 ou superior (Node.js 22 LTS é recomendado)
+- npm
 
-## 🚀 Tecnologias
+## Instalação
 
-- [Next.js](https://nextjs.org/)
-- [React](https://react.dev/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Jest](https://jestjs.io/) e [Testing Library](https://testing-library.com/) (para testes)
+No terminal, acesse a pasta do projeto e instale as dependências:
 
-## 📂 Estrutura do Projeto
+```bash
+npm install
+```
+
+Para instalar exatamente as versões registradas no `package-lock.json` (por exemplo, em CI), use:
+
+```bash
+npm ci
+```
+
+## Executar em desenvolvimento
+
+```bash
+npm run dev
+```
+
+Abra [http://localhost:3000](http://localhost:3000) no navegador.
+
+## Testes
+
+Execute os testes automatizados:
+
+```bash
+npm test
+```
+
+As suítes verificam a renderização da página e das tarefas iniciais, a validação e submissão do formulário de nova tarefa e a contagem de tarefas totais, concluídas e pendentes, incluindo uma lista vazia.
+
+## Build de produção
+
+```bash
+npm run build
+```
+
+## Estrutura do projeto
 
 ```text
-testador/
-├── src/
-│   ├── app/               # Páginas e layouts (Next.js App Router)
-│   ├── components/        # Componentes da interface (Lista, Nova Tarefa, etc.)
-│   ├── data/              # Dados iniciais/mockados
-│   ├── hooks/             # Hooks customizados (ex: useContadorDeTarefas)
-│   ├── tests/             # Testes unitários e de integração
-│   └── types/             # Definições de tipos do TypeScript
-├── public/                # Arquivos estáticos
-├── jest.config.ts         # Configuração do Jest
-└── package.json           # Dependências e scripts do projeto
-
-📦 Instalação
-Clone o repositório e acesse a pasta do projeto:
-
-bash
-git clone https://github.com/seu-usuario/testador.git
-cd testador
-Em seguida, instale as dependências usando uma das opções abaixo:
-
-bash
-npm install
-
-ou, para instalações determinísticas (recomendado em ambientes de CI/CD):
-
-bash
-npm ci
-
-▶️ Executando o projeto
-Inicie o servidor de desenvolvimento:
-
-bash
-npm run dev
-
-A aplicação estará disponível em http://localhost:3000 (porta padrão do Next.js).
-
-🧪 Testes
-Execute a suíte de testes com o Jest:
-
-bash
-npm test
+src/
+├── app/          # Página principal, layout e estilos globais
+├── components/   # Componentes de interface, incluindo tarefas e formulário
+├── data/         # Tarefas iniciais
+├── hooks/        # Hook para calcular os totais por status
+├── tests/        # Testes de componentes, página e hook
+└── types/        # Tipos compartilhados da aplicação
+public/           # Arquivos estáticos
+```
